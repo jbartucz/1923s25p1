@@ -1,5 +1,7 @@
 import random
 
+
+#rooms in the house 
 rooms = { 
          
          "Kitchen": { 
@@ -134,35 +136,40 @@ rooms = {
          
          }
 
+#list of animals to choose from
 my_animals = ["Tina The Cat", "Chucky The Dog", "Donald The Duck", "Jack The Fish"]
 
-
+#list of toys the animals can have
 my_toys = {
     "Tina The Cat": ["Catnip toys", "Spring toys", "Cardboard Box"],
     "Chucky The Dog": ["Tug Rope", "Chew Toys", "Fetch Ball", "Frisbee"],
     "Donald The Duck": ["Mirror", "Hanging Bells", "Floating Pool Toys", "Treat-Dispensing toys"]
 }
 
+#printInstuctions() will output navagation instructions
 def printInstructions(): 
   print("\n What would you like to do?")
   print(" - look            : Show the rooms description and any items present.")
   print(" - go <room>       : Moves you to a connected room")
-  print(" - take random    : Picks up an item (if available  in present room).")
+  print(" - take random     : Picks up an item (if available  in present room).")
   print(" - inventory       : Shows items you are carrying")
   print(" - exit            : Quits the game.\n")
 
+#show room will print the descriptions of the room the player is currently in 
 def showRoom(playerState): 
   currentRoom = playerState["currentRoom"]
   roomInfo = rooms[currentRoom]
   print(f"\nYou are in the {currentRoom}.\n")
   
   print(roomInfo["description"])
-  print("\n", roomInfo["choices"])
   
+  #outputs the rooms the user can enter
   print("\nExits:")
   for key, value in roomInfo["choices"].items(): 
     print(f" {key}: {value}")
-  
+
+#change room changes the playerState to the chosen room when the 
+#user inputs go <room> 
 def changeRooms(playerState, chosenRoom):  
   currentRoom = playerState["currentRoom"]
   if chosenRoom in rooms[currentRoom]["choices"].values(): 
@@ -170,21 +177,25 @@ def changeRooms(playerState, chosenRoom):
     showRoom(playerState)
   else: 
     print(f"Unfortunately, you cannot go to {chosenRoom} from here.")
-    
+
+#takeRandomItem gives the user a random item to play with    
 def takeRandomItem(playerState, my_toys): 
     animal = playerState.get("animal")
     
+    #checks to see if the toy is available to the animal the user has chosen 
     if animal not in my_toys: 
        print(f"No toys available for {animal}")
        return
-    
+     
+    #randomly choose an item from the my_toy list
     toy = random.choice(my_toys[animal])
     
+    #appends the toy into the players inventory list
     playerState["inventory"].append(toy)
     
     return print(f"You have added {toy} to your inventory!")
     
-    
+ #function to run the game    
 def startGame(): 
   print("Welcome to the House Exploration Game!")
 
@@ -194,7 +205,7 @@ def startGame():
     
   while True:
    
-    
+    #user input to choose animal from my_animals list 
     while True:
       animalChoice = input("> ").strip().title()
       if animalChoice in my_animals:
@@ -211,27 +222,35 @@ def startGame():
     }
 
     print(f"\nYou are a {playerState['animal']} exploring this house!")
-    printInstructions()
+    
+    
+    showRoom(playerState)
     
     print("\nToys available: ")
     for animal, toys in my_toys.items(): 
       print(f"{animal}: {', '.join(toys)}")
     
-    showRoom(playerState)
+    printInstructions()
     
-    
+  #if statments used to choose functions based on the user input 
     while True: 
       command = input("\n> ").strip().lower()
       
       if command == "exit": 
         print("Thanks for Playing! Goodbye.")
-        break
+        return
       elif command == "look":
         showRoom(playerState)
+        printInstructions()
       elif command.startswith("go "): 
         _, chosenRoom = command.split(" ", 1)
         chosenRoom = chosenRoom.title()
         changeRooms(playerState, chosenRoom)
+        
+        print("\nToys available: ")
+        for animal, toys in my_toys.items(): 
+         print(f"{animal}: {', '.join(toys)}")
+        
         printInstructions()
       elif command.startswith("take random"): 
          takeRandomItem(playerState, my_toys)
